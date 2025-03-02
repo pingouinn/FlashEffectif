@@ -3,9 +3,9 @@ package gui.components;
 import javax.swing.*;
 import java.awt.*;
 
-public class loading extends JPanel {
+public class Loading extends JPanel {
 
-    public loading(String customText) {
+    public Loading(String customText) {
         setLayout(new BorderLayout());
         
         // Load the spinner.gif

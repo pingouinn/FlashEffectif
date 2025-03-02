@@ -8,11 +8,13 @@ import org.json.JSONArray;
 import dataClasses.CachedInstances;
 import dataClasses.Activity;
 import dataClasses.Volunteer;
-import dataClasses.ActivityList;    
+import dataClasses.ActivityList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.time.LocalDate;
 import utils.dateParser;
 import utils.roles;
@@ -64,6 +66,9 @@ public class queries {
 
             CachedInstances.addActivity(activityId, activity);
         }
+
+        // Get registered volunteers for this activity asynchronously
+        this.APIgetActivityRegisteredVolunteers(activity);
 
         return activity;
     }
@@ -145,19 +150,19 @@ public class queries {
         }
 
         //Get the JSON object
-        JSONObject rawData = res != null ? new JSONObject(res) : new JSONObject();
+        JSONArray rawData = res != null ? new JSONArray(res) : new JSONArray();
         if (rawData.isEmpty()) {return null;}
 
-        JSONArray registeredVolunteersJson = new JSONArray(rawData);
-        List<Volunteer> registeredVolunteers = activity.getRegisteredVolunteers();
-        for (int i = 0; i < registeredVolunteersJson.length(); i++) {
-            JSONObject registeredVolunteerJson = registeredVolunteersJson.getJSONObject(i);
+        List<Volunteer> registeredVolunteers = new ArrayList<>();
+        for (int i = 0; i < rawData.length(); i++) {
+            JSONObject registeredVolunteerJson = rawData.getJSONObject(i);
             Integer roleId = registeredVolunteerJson.optInt("role");
             if (!roles.isRoleNeeded(roleId)) {continue;}
 
-            JSONObject userJson = rawData.getJSONObject("utilisateur");
+            JSONObject userJson = registeredVolunteerJson.getJSONObject("utilisateur");
             Volunteer volunteer = APIgetVolunteer(userJson.optString("id"));
             registeredVolunteers.add(volunteer);
+            volunteer.addActivity(activity.getId(), roleId);
         }
 
         activity.setRegisteredVolunteers(registeredVolunteers);

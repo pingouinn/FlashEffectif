@@ -60,6 +60,7 @@ public class Activity {
 
     public boolean isActivityComplete() {
         //Checks for every role needded if the number of registered volunteers is enough
+        if (registeredVolunteers == null) {return false;}
         for (Integer roleId : rolesNeeded.keySet()) {
             if (registeredVolunteers.stream().filter(volunteer -> volunteer.getActivityRole(this.id) == roleId).count() < rolesNeeded.get(roleId)) {
                 return false;

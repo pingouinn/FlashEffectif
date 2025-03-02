@@ -21,36 +21,37 @@ public class Main {
         gui.setVisible(true);
 
         // Configure SSL
-        gui.updateTextCentered("Configuring SSL ...");
+        gui.showLoading("Configuring SSL ...");
         safeWait(400);
         sslPolicy.configureSSL();
         safeWait(400);
-        gui.updateTextCentered("SSL policy set");
+        gui.showLoading("SSL policy set");
 
         //Authenticate
         safeWait(400);
         gui.showLoading("Authenticating ...");
         Set<Cookie> cookies = authManager.authenticate(username, password);
         if (cookies.isEmpty()) {
-            gui.showTextCentered("An error occured while authenticating ... Aborting");
+            gui.showError("An error occured while authenticating ... Aborting");
             safeWait(2000);
             return;
         }
-        gui.showTextCentered("Authenticated as " + username + " !");
+        gui.showValid("Authenticated as " + username + " !");
+        safeWait(2000);
 
         queries queryHandler = new queries(username, password, cookies);
         try {
             gui.showLoading("Requesting activities from server ...");
             ActivityList res = queryHandler.APIgetActivitiesList(18, dateParser.stringToDate("2025-02-28"), dateParser.stringToDate("2025-03-05"));
-            String loaded = "Loaded activities : ";
-            for (Activity activity : res.getActivities().values()) {
-                loaded += activity.getName() + ", ";
-            }
-            gui.showTextCentered(loaded);
+            gui.showLoading("Displaying activities ...");
+            gui.showActivityList(res.getActivities());
+            safeWait(6000);
+
         } catch (Exception e) {
             System.out.println("An error occured while performing the request");            
             e.printStackTrace();
         }
+        return;
     }
 
     private static void safeWait(Integer time) {
