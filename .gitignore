@@ -1,0 +1,31 @@
+# Fichiers compilés
+*.class
+*.jar
+*.war
+*.ear
+
+# Dossiers de build
+/bin/
+/build/
+out/
+target/
+
+# Fichiers IDE
+/.idea/
+/*.iml
+/.vscode/
+/*.classpath
+/*.project
+/.settings/
+
+# Fichiers de logs
+logs/
+*.log
+hs_err_pid*
+
+# Fichiers système (Mac & Windows)
+.DS_Store
+Thumbs.db
+
+# Dépendances locales
+lib/
