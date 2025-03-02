@@ -1,10 +1,17 @@
 package gui.components;
 
 import javax.swing.*;
+
+import dataClasses.ActivityList;
+import dataClasses.CachedActions;
+import dataClasses.CachedInstances;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.ZoneId;
 import java.util.Date;
+import requests.Queries;
 
 public class SearchBar extends JPanel {
     
@@ -13,8 +20,11 @@ public class SearchBar extends JPanel {
     private JSpinner startDateSpinner;
     private JSpinner endDateSpinner;
     private JButton searchButton;
+    private Queries queryHandler;
 
-    public SearchBar() {
+    public SearchBar(Queries queryHandler) {
+        this.queryHandler = queryHandler;
+
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -67,7 +77,7 @@ public class SearchBar extends JPanel {
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                performSearch();
+                new Thread(() -> performSearch()).start();
             }
         });
     }
@@ -77,11 +87,26 @@ public class SearchBar extends JPanel {
         boolean incompleteOnly = incompleteOnlyCheckBox.isSelected();
         Date startDate = (Date) startDateSpinner.getValue();
         Date endDate = (Date) endDateSpinner.getValue();
+        
+        CachedActions.shouldDisplayLoading = true;
 
-        // Perform search logic here
-        System.out.println("Search Text: " + searchText);
-        System.out.println("Incomplete Only: " + incompleteOnly);
-        System.out.println("Start Date: " + startDate);
-        System.out.println("End Date: " + endDate);
+        // Call the API to get the search results
+        ActivityList res = new ActivityList();
+        try {
+            res = queryHandler.APIgetActivitiesList(18, startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        } catch (Exception e) {
+            System.out.println("An error occured while performing the request");
+            e.printStackTrace();
+        }
+
+        if (incompleteOnly) {
+            res.filterCompleteActivities();
+        }
+
+        if (!searchText.isEmpty()) {
+            res.filterActivitiesByText(searchText);
+        }
+
+        CachedInstances.addActivityList(CachedInstances.getNewActLstId(), res);
     }
 }

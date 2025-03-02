@@ -14,17 +14,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.time.LocalDate;
-import utils.dateParser;
-import utils.roles;
+import utils.DateParser;
+import utils.Roles;
 
-public class queries {
+public class Queries {
 
-    private requestManager request;
+    private RequestManager request;
 
-    public queries(String user, String pass, Set<Cookie> cookies) {
-        this.request = new requestManager(user, pass);
+    public Queries(String user, String pass, Set<Cookie> cookies) {
+        this.request = new RequestManager(user, pass);
         this.request.setCookies(cookies);
     }
 
@@ -51,7 +50,7 @@ public class queries {
             for (int i = 0; i < rolesNeededJson.length(); i++) {
                 JSONObject crewRole = rolesNeededJson.getJSONObject(i);
                 Integer code = crewRole.optInt("code");
-                if (!roles.isRoleNeeded(code)) {continue;}
+                if (!Roles.isRoleNeeded(code)) {continue;}
                 rolesNeeded.put(code, crewRole.optInt("effectif"));
             }
 
@@ -59,8 +58,8 @@ public class queries {
             activity = new Activity(
                 rawData.optString("id"),
                 actJson.optString("libelle"),
-                dateParser.stringToDateTime(rawData.optString("debut")),
-                dateParser.stringToDateTime(rawData.optString("fin")),
+                DateParser.stringToDateTime(rawData.optString("debut")),
+                DateParser.stringToDateTime(rawData.optString("fin")),
                 rolesNeeded
             );
 
@@ -76,7 +75,7 @@ public class queries {
     public ActivityList APIgetActivitiesList(Integer structId, LocalDate startDate, LocalDate endDate) {
         String res = null;
         try {
-            res = request.performRequest("activite?debut=" + dateParser.dateToString(startDate) + "&fin=" + dateParser.dateToString(endDate) + "&structure=" + structId.toString());
+            res = request.performRequest("activite?debut=" + DateParser.dateToString(startDate) + "&fin=" + DateParser.dateToString(endDate) + "&structure=" + structId.toString());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -86,29 +85,27 @@ public class queries {
         JSONArray rawData = res != null ? new JSONArray(res) : new JSONArray();
         if (rawData.isEmpty()) {return null;}
 
-        ActivityList activityList = CachedInstances.getActivityList(structId);
-        if (activityList == null) {
-            HashMap<String, Activity> activities = new HashMap<>();
-            for (int i = 0; i < rawData.length(); i++) {
-                JSONObject activityJson = rawData.getJSONObject(i);
-                JSONArray activitySeance = activityJson.getJSONArray("seanceList");
-                activitySeance.forEach(seance -> {
-                    JSONObject seanceJson = (JSONObject) seance;
-                    Activity activity = APIgetActivity(seanceJson.optString("id"));
-                    activities.put(activity.getId(), activity);
-                });
-            }
-
-            activityList = new ActivityList(
-                structId,
-                startDate,
-                endDate,
-                activities
-            );
-
-            CachedInstances.addActivityList(structId, activityList);
+  
+        HashMap<String, Activity> activities = new HashMap<>();
+        for (int i = 0; i < rawData.length(); i++) {
+            JSONObject activityJson = rawData.getJSONObject(i);
+            JSONArray activitySeance = activityJson.getJSONArray("seanceList");
+            activitySeance.forEach(seance -> {
+                JSONObject seanceJson = (JSONObject) seance;
+                Activity activity = APIgetActivity(seanceJson.optString("id"));
+                activities.put(activity.getId(), activity);
+            });
         }
 
+        ActivityList activityList = new ActivityList(
+            structId,
+            startDate,
+            endDate,
+            activities
+        );
+
+        CachedInstances.addActivityList(CachedInstances.getNewActLstId(), activityList);
+    
         return activityList;
     }
 
@@ -157,7 +154,7 @@ public class queries {
         for (int i = 0; i < rawData.length(); i++) {
             JSONObject registeredVolunteerJson = rawData.getJSONObject(i);
             Integer roleId = registeredVolunteerJson.optInt("role");
-            if (!roles.isRoleNeeded(roleId)) {continue;}
+            if (!Roles.isRoleNeeded(roleId)) {continue;}
 
             JSONObject userJson = registeredVolunteerJson.getJSONObject("utilisateur");
             Volunteer volunteer = APIgetVolunteer(userJson.optString("id"));

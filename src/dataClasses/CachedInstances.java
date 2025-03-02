@@ -43,4 +43,12 @@ public class CachedInstances {
     public static ActivityList getActivityList(Integer id) {
         return activityLists.get(id);
     }
+
+    public static Integer getNewActLstId() {
+        return activityLists.size();
+    }
+
+    public static ActivityList getLastList() {
+        return activityLists.get(activityLists.size()-1);
+    }
 }

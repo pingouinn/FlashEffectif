@@ -9,7 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-public class authManager {
+public class AuthManager {
 
     private static final String HOME_URL = "https://connect.croix-rouge.fr/app/UserHome";
     private static final String AUTH_URL = "https://connect.croix-rouge.fr/signin";

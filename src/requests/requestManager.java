@@ -1,6 +1,6 @@
 package requests;
 
-import auth.authManager;
+import auth.AuthManager;
 import java.io.IOException;
 import java.util.Set;
 
@@ -11,7 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 
-public class requestManager {
+public class RequestManager {
 
     private final String API_URL = "https://pegass.croix-rouge.fr/crf/rest/";
     private String USER;
@@ -23,7 +23,7 @@ public class requestManager {
     private boolean cookieInjected = false;
     private boolean throwExept = false;
 
-    public requestManager(String user, String pass) {
+    public RequestManager(String user, String pass) {
         this.USER = user;
         this.PASS = pass;
     }
@@ -88,7 +88,7 @@ public class requestManager {
     public void authenticateIfCookiesEmpty() {
         if (this.cookieHeader == null) {
             System.out.println("Performing Authentication");
-            this.cookieHeader = authManager.authenticate(this.USER, this.PASS);
+            this.cookieHeader = AuthManager.authenticate(this.USER, this.PASS);
             if (this.cookieHeader.isEmpty()) {
                 throw new RuntimeException("Login failed: No cookies received. Abort.");
             }

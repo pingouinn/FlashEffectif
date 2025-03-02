@@ -11,8 +11,12 @@ public class DisplayActivityList extends JPanel {
     public DisplayActivityList(HashMap<String,Activity> activities) {
         JPanel activityPanel = new JPanel();
         activityPanel.setLayout(new BoxLayout(activityPanel, BoxLayout.Y_AXIS));
-        for (Activity activity : activities.values()) {
-            activityPanel.add(new ActivityComponent(activity));
+        if (activities.isEmpty()) {
+            activityPanel.add(new JLabel("No activities found"));
+        } else {
+            for (Activity activity : activities.values()) {
+                activityPanel.add(new ActivityComponent(activity));
+            }
         }
 
         JScrollPane scrollPane = new JScrollPane(activityPanel);

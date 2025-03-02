@@ -2,7 +2,7 @@ package utils;
 
 import java.util.HashMap;
 
-public class roles {
+public class Roles {
 
     private static final HashMap<Integer, String> neededRoles = new HashMap<>();
     static {
