@@ -4,7 +4,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.util.HashMap;
 
 // Components 
 
@@ -13,6 +12,7 @@ import gui.components.DisplayActivityList;
 import gui.components.SearchBar;
 import gui.components.Error;
 import gui.components.ValidComponent;
+import gui.components.AuthInterface;
 
 // Data classes
 
@@ -101,6 +101,16 @@ public class Interface extends JFrame {
             showLoading("Requesting activities from server ....");
             CachedActions.shouldDisplayLoading = false;
         }
+    }
+
+    public void showAuthInterface(String username, String password) {
+        this.panel.removeAll();
+        this.panel.add(new AuthInterface(username, password), BorderLayout.CENTER);
+        redraw();
+    }
+
+    public boolean isAuthDone() {
+        return CachedActions.isAuthDone;
     }
 
     // Outer accessed misc methods for init and cleaning

@@ -37,6 +37,9 @@ public class AuthManager {
 
             while (!driver.getCurrentUrl().equals(HOME_URL)) {
                 Thread.sleep(1000);
+                if (driver.getCurrentUrl().equals(AUTH_URL) && driver.findElement(By.id("okta-form-infobox-error")) != null) {
+                    return cookieSet;
+                }
             }
             
             cookieSet = driver.manage().getCookies();

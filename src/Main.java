@@ -1,5 +1,6 @@
 import auth.AuthManager;
 import requests.Queries;
+import utils.ConfigManager;
 import auth.sslPolicy;
 import dataClasses.CachedActions;
 import gui.Interface;
@@ -10,11 +11,16 @@ import org.openqa.selenium.Cookie;
 public class Main {
 
     public static void main(String[] args) {
-        //TODO : Implement a way to get the username and password from the GUI
-        String username = "usr";
-        String password = "pass";
+        ConfigManager configManager = new ConfigManager();
+        String username = configManager.getUser();
+        String password = configManager.getPassword();
+        if (username == null || password == null) {
+            username = "";
+            password = "";
+        }
+        CachedActions.username = username;
+        CachedActions.password = password;
 
-        System.out.println("Starting ...");
         Interface gui = new Interface();
         gui.setVisible(true);
 
@@ -24,17 +30,26 @@ public class Main {
         sslPolicy.configureSSL();
         safeWait(400);
         gui.showLoading("SSL policy set");
-
-        //Authenticate
         safeWait(400);
+
+
+        // Authenticate
         gui.showLoading("Authenticating ...");
-        Set<Cookie> cookies = AuthManager.authenticate(username, password);
-        if (cookies.isEmpty()) {
-            gui.showError("An error occured while authenticating ... Aborting");
-            safeWait(2000);
-            CachedActions.shouldKillGui = true;
-            return;
+        Set<Cookie> cookies = new java.util.HashSet<>();
+        while (cookies.isEmpty()) {
+            gui.showAuthInterface(CachedActions.username, CachedActions.password);
+            while (!gui.isAuthDone()) {
+                safeWait(200);
+            }
+            cookies = AuthManager.authenticate(CachedActions.username, CachedActions.password);
+            if (cookies.isEmpty()) {
+                gui.showError("An error occured while authenticating (Wrong Email / password OR Browser was closed) Please retry !");
+                safeWait(2000);
+                CachedActions.isAuthDone = false;
+            }
         }
+
+        //Finish app
         gui.showValid("Authenticated as " + username + " !");
         safeWait(2000);
 
