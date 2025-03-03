@@ -7,7 +7,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+
+import utils.AutoWebDriver;
 
 public class AuthManager {
 
@@ -15,16 +16,10 @@ public class AuthManager {
     private static final String AUTH_URL = "https://connect.croix-rouge.fr/signin";
 
     public static Set<Cookie> authenticate(String username, String password) {
-        if (true) {
-            System.setProperty("webdriver.opera.driver", "operadriver.exe");
-        } 
-        //else {
-        //     System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-        // }
 
-        //TODO : Add support for other browsers
+        // Get the navigator driver related to the default browser
+        WebDriver driver = AutoWebDriver.getDriver();
 
-        WebDriver driver = new ChromeDriver();
         Set<Cookie> cookieSet = new HashSet<>();
 
         try {

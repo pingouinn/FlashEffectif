@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         //TODO : Implement a way to get the username and password from the GUI
-        String username = "suer";
+        String username = "usr";
         String password = "pass";
 
         System.out.println("Starting ...");

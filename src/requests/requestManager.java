@@ -1,6 +1,8 @@
 package requests;
 
 import auth.AuthManager;
+import utils.AutoWebDriver;
+
 import java.io.IOException;
 import java.util.Set;
 
@@ -77,12 +79,7 @@ public class RequestManager {
     }
 
     public WebDriver registerHeadlessWebdriver() {
-        System.setProperty("webdriver.opera.driver", "operadriver.exe");
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--disable-gpu");
-        options.addArguments("--disable-extensions");
-        return new ChromeDriver(options);
+        return AutoWebDriver.registerHeadlessWebdriver();
     }
 
     public void authenticateIfCookiesEmpty() {

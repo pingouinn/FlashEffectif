@@ -12,8 +12,8 @@ Based on the closed API REST JSON of Pegass (the French Red Cross operations web
 Requirements
 ------------
 
-Currently only supported on Windows with Chrom or Opera browsers.
-More OS and Browser are planned for further releases.
+Currently only supported on Windows with Chrome or Opera browsers.
+More OS and Browsers are planned for further releases.
 
 Releases
 --------
